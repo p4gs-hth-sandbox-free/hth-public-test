@@ -1,0 +1,28 @@
+# HTH s4-5 validation SCAFFOLD (not an HTH pack): minimal reusable callee
+# for pack config/hth-github-5.20-restrict-secrets-inherit.yml, which calls
+# ./.github/workflows/deploy.yml. Reports only whether each secret is PRESENT.
+name: Deploy (reusable scaffold for 5.20)
+on:
+  workflow_call:
+    secrets:
+      DEPLOY_TOKEN:
+        required: true
+      REGISTRY_URL:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report which secrets reached the callee (presence only)
+        env:
+          S_DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          S_REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+          S_HTH_UNPASSED_SECRET: ${{ secrets.HTH_UNPASSED_SECRET }}
+        run: |
+          for n in S_DEPLOY_TOKEN S_REGISTRY_URL S_HTH_UNPASSED_SECRET; do
+            if [ -n "${!n}" ]; then echo "${n#S_}=present"; else echo "${n#S_}=absent"; fi
+          done
