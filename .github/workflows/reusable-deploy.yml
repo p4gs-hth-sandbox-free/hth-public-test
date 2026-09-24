@@ -1,0 +1,24 @@
+name: Reusable deploy (HTH 5.5 test scaffold, not a pack)
+on:
+  workflow_call:
+    secrets:
+      DEPLOY_TOKEN:
+        required: true
+      REGISTRY_URL:
+        required: true
+      HTH_UNPASSED_SECRET:
+        required: false
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report which secrets reached the callee (presence only, never values)
+        env:
+          A: ${{ secrets.DEPLOY_TOKEN }}
+          B: ${{ secrets.REGISTRY_URL }}
+          C: ${{ secrets.HTH_UNPASSED_SECRET }}
+        run: |
+          p() { if [ -n "$1" ]; then echo present; else echo absent; fi; }
+          echo "DEPLOY_TOKEN=$(p "$A") | REGISTRY_URL=$(p "$B") | HTH_UNPASSED_SECRET=$(p "$C")"
