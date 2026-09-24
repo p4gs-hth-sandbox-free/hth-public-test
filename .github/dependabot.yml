@@ -1,27 +1,45 @@
-# HTH GitHub Control 6.7: Enforce Dependency Cool-Down Periods (Dependabot)
-# Profile: L2 | NIST: SA-12, SI-7
-# https://howtoharden.com/guides/github/#67-enforce-dependency-cool-down-periods
+# HTH GitHub Control 6.03: Dependabot Grouped Security Updates
+# Profile: L1 | NIST: SA-12
 # Deploy: Copy to .github/dependabot.yml in your repository
-#
-# Native Dependabot cool-down. Security updates are exempt and open immediately.
 
-# HTH Guide Excerpt: begin config-dependabot-cooldown
+# HTH Guide Excerpt: begin cli-dependabot-grouped-updates
 version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    cooldown:
-      default-days: 3
-      semver-major-days: 7
-      semver-minor-days: 3
-      semver-patch-days: 3
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      all-pip-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    cooldown:
-      default-days: 3
-# HTH Guide Excerpt: end config-dependabot-cooldown
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+# HTH Guide Excerpt: end cli-dependabot-grouped-updates
